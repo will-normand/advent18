@@ -20,7 +20,7 @@
 
 (defn next-10 [recipes n] (take 10 (drop n recipes)))
 
-(defn do-step [recipes recipes-count elf-1-pos elf-2-pos recipe-limit]
+(defn do-step [recipes recipes-count elf-1-pos elf-2-pos recipe-limit search-string]
   (let [elf-1-score (nth recipes elf-1-pos)
         elf-2-score (nth recipes elf-2-pos)
         new-recipes (next-recipes elf-1-score elf-2-score)
@@ -30,9 +30,11 @@
         new-elf2 (mod (+ elf-2-pos (+ elf-2-score 1)) all-recipe-count)]
     #_(print-recipes all-recipes new-elf1 new-elf2)
     (if (< all-recipe-count (+ recipe-limit 10))
-      (recur all-recipes all-recipe-count new-elf1 new-elf2 recipe-limit)
-      (next-10 all-recipes recipe-limit))))
+      (recur all-recipes all-recipe-count new-elf1 new-elf2 recipe-limit search-string)
+      (str/index-of (str/join all-recipes) search-string))))
 
-(defn run1 [recipe-limit]
-  (str/join (do-step input (count input) 0 1 recipe-limit)))
+;(defn run1 [recipe-limit]
+;  (str/join (do-step input (count input) 0 1 recipe-limit)))
 
+(defn run2 [recipe-limit search-string]
+  (do-step input (count input) 0 1 recipe-limit search-string))
