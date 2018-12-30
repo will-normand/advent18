@@ -7,9 +7,9 @@
             :lumber \#})
 
 (defn parse-area [area] ((set/map-invert areas) area))
-(defn parse-row [row] (map parse-area (vec row)))
+(defn parse-row [row] (vec (map parse-area (vec row))))
 (defn load-input [filename]
-  (map parse-row (str/split-lines (slurp filename))))
+  (vec (map parse-row (str/split-lines (slurp filename)))))
 
 (defn print-area [area] (print (areas area)))
 (defn print-row [row] (dorun (map print-area row)) (println))
@@ -54,12 +54,26 @@
             :lumber
             :ground))))))
 
-(defn tick [landscape]
-   (map-indexed (fn [y row]
-                 (map-indexed
-                   (fn [x area] (new-state landscape x y))
-                   row))
-               landscape))
+(defn tick
+  [landscape]
+  (loop [ls landscape
+         y 0
+         new-ls []]
+    (if (empty? ls)
+      new-ls
+      (recur
+        (rest ls)
+        (+ y 1)
+        (conj new-ls
+              (loop [r (first ls)
+                     x 0
+                     acc []]
+                (if (empty? r)
+                  acc
+                  (recur
+                    (rest r)
+                    (+ x 1)
+                    (conj acc (new-state landscape x y))))))))))
 
 (defn count-resources [landscape]
   (reduce (fn [m n] (merge-with + m n)) {} (map (fn [row] (frequencies row)) landscape)))
@@ -74,3 +88,4 @@
     (do (print-landscape landscape) (resource-value landscape))
     (do (if (= (mod times 1000) 0) (println times))
         (recur (tick landscape) (- times 1)))))
+
