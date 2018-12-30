@@ -57,22 +57,22 @@
 (defn tick
   [landscape]
   (loop [ls landscape
-         y 0
+         y (- (count ls) 1)
          new-ls []]
     (if (empty? ls)
       new-ls
       (recur
-        (rest ls)
-        (+ y 1)
+        (pop ls)
+        (- y 1)
         (conj new-ls
-              (loop [r (first ls)
-                     x 0
+              (loop [r (peek ls)
+                     x (- (count r) 1)
                      acc []]
                 (if (empty? r)
                   acc
                   (recur
-                    (rest r)
-                    (+ x 1)
+                    (pop r)
+                    (- x 1)
                     (conj acc (new-state landscape x y))))))))))
 
 (defn count-resources [landscape]
